@@ -1,0 +1,29 @@
+{
+  "name": "netflix-admin",
+  "version": "1.0.0",
+  "description": "Panel d'administration Netflix",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "concurrently \"nodemon server.js\" \"npm run watch:css\"",
+    "watch:css": "npx @tailwindcss/cli -i ./public/css/input.css -o ./public/css/output.css --watch",
+    "build:css": "npx @tailwindcss/cli -i ./public/css/input.css -o ./public/css/output.css --minify",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "axios": "^1.7.9",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.9"
+  }
+}
