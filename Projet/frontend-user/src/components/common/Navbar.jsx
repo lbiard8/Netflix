@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import SearchBar from './SearchBar';
 
 function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const isScrolled = useState(false);
+  
+
   // Note : useEffect sera vu au TP 03
   // Pour l'instant, version statique
   return (
@@ -35,6 +38,7 @@ function Navbar() {
                 </a>
               </li>
             </ul>
+             <SearchBar />
           </div>
 
           {/* User Section */}
