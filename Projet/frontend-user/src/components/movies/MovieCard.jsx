@@ -1,5 +1,14 @@
 import Button from '../common/Button';
 
+const genreColors = {
+  'Action': 'bg-red-500',
+  'Comédie': 'bg-yellow-500',
+  'Drame': 'bg-blue-500',
+  'Science-Fiction': 'bg-purple-500',
+  'Horreur': 'bg-orange-500',
+  'Thriller': 'bg-gray-500'
+ };
+
 function MovieCard({ movie }) {
   return (
     <div className="group relative h-40 w-full overflow-hidden rounded-md bg-zinc-900 transition-all duration-300 hover:scale-105 hover:z-10">
@@ -39,6 +48,7 @@ function MovieCard({ movie }) {
           </Button>
         </div>
       </div>
+      <div className={`absolute bottom-2 left-2 w-4 h-4 rounded-full ${genreColors[movie.genre] || 'bg-gray-400'}`} />
     </div>
   );
 }
