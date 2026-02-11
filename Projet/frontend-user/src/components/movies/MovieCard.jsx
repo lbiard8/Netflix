@@ -1,4 +1,5 @@
 import Button from '../common/Button';
+import MovieDescription from './MovieDescription';
 
 const genreColors = {
   'Action': 'bg-red-500',
@@ -11,13 +12,28 @@ const genreColors = {
 
 function MovieCard({ movie }) {
   return (
-    <div className="group relative h-40 w-full overflow-hidden rounded-md bg-zinc-900 transition-all duration-300 hover:scale-105 hover:z-10">
+    <div className="group relative h-80 w-full overflow-hidden rounded-md bg-zinc-900 transition-all duration-300 hover:scale-105 hover:z-10 text-center">
       {/* Image principale */}
       <img
-        src={movie.image}
+        src={movie.poster}
         alt={movie.title}
         className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-30"
       />
+
+      <div className="absolute top-2 left-2 rounded bg-black/60 px-2 py-1 text-xs text-yellow-500 backdrop-blur-md">
+        <button 
+          onClick={handleLike} 
+          className="like-button"
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '1.2rem'
+          }}
+        >
+          {isLiked ? '❤' : '🤍'} {likes} likes
+      </button>
+      </div>
 
       {/* Badge de note (visible par défaut) */}
       <div className="absolute top-2 right-2 rounded bg-black/60 px-2 py-1 text-xs text-yellow-500 backdrop-blur-md">
@@ -34,9 +50,7 @@ function MovieCard({ movie }) {
           <span>{movie.duration}min</span>
         </div>
 
-        <p className="mt-2 line-clamp-2 text-[10px] text-gray-400">
-          {movie.description}
-        </p>
+        <MovieDescription description={movie.description} />
 
         {/* Actions */}
         <div className="mt-3 flex gap-2">
@@ -44,7 +58,7 @@ function MovieCard({ movie }) {
             ▶ Louer {movie.price}€
           </Button>
           <Button variant="secondary" size="sm" className="px-2">
-            + Info
+            + Info Movie
           </Button>
         </div>
       </div>
