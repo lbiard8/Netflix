@@ -1,5 +1,6 @@
 import Button from '../common/Button';
 import MovieDescription from './MovieDescription';
+import { useState } from 'react';
 
 const genreColors = {
   'Action': 'bg-red-500',
@@ -11,6 +12,8 @@ const genreColors = {
  };
 
 function MovieCard({ movie }) {
+  const [isLiked, setIsLiked] = useState(false);
+  const [likes, setLikes] = useState(0);
   return (
     <div className="group relative h-80 w-full overflow-hidden rounded-md bg-zinc-900 transition-all duration-300 hover:scale-105 hover:z-10 text-center">
       {/* Image principale */}
@@ -20,19 +23,25 @@ function MovieCard({ movie }) {
         className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-30"
       />
 
-      <div className="absolute top-2 left-2 rounded bg-black/60 px-2 py-1 text-xs text-yellow-500 backdrop-blur-md">
+      <div className="absolute top-2 left-2 z-10 rounded bg-black/60 px-2 py-1 text-xs text-yellow-500 backdrop-blur-md">
         <button 
-          onClick={handleLike} 
+          onClick={(e) => {
+            e.stopPropagation(); // Empêche le clic de se propager au parent (la carte du film)
+            setIsLiked(!isLiked);
+            setLikes(prev => isLiked ? prev - 1 : prev + 1);
+          }} 
           className="like-button"
           style={{
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            fontSize: '1.2rem'
+            fontSize: '1.2rem',
+            position: 'relative', 
+            zIndex: 20            
           }}
         >
-          {isLiked ? '❤' : '🤍'} {likes} likes
-      </button>
+          {isLiked ? '❤' : '🤍'}
+        </button>
       </div>
 
       {/* Badge de note (visible par défaut) */}
