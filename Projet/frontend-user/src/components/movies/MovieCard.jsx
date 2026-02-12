@@ -13,9 +13,8 @@ const genreColors = {
 
 function MovieCard({ movie }) {
   const [isLiked, setIsLiked] = useState(false);
-  const [likes, setLikes] = useState(0);
   return (
-    <div className="group relative h-80 w-full overflow-hidden rounded-md bg-zinc-900 transition-all duration-300 hover:scale-105 hover:z-10 text-center">
+    <div className="group relative h-100 w-full overflow-hidden rounded-md bg-zinc-900 transition-all duration-300 hover:scale-105 hover:z-10 text-center">
       {/* Image principale */}
       <img
         src={movie.poster}
@@ -28,7 +27,6 @@ function MovieCard({ movie }) {
           onClick={(e) => {
             e.stopPropagation(); // Empêche le clic de se propager au parent (la carte du film)
             setIsLiked(!isLiked);
-            setLikes(prev => isLiked ? prev - 1 : prev + 1);
           }} 
           className="like-button"
           style={{

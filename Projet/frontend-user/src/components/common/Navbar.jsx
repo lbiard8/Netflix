@@ -17,7 +17,7 @@ function Navbar() {
           {/* Logo */}
           <div className="flex items-center space-x-8">
             <h1 className="text-primary text-3xl font-bold tracking-tight">
-              NETFLIX
+              UMAFLIX
             </h1>
 
             {/* Navigation Links */}

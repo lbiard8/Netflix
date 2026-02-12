@@ -3,13 +3,16 @@ import { useState } from 'react';
 function SearchBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <div className="relative flex items-center">
       {/* Bouton de recherche */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="hover:text-gray-300 transition-colors"
+        className="hover:text-gray-300 transition-colors cursor-pointer"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -26,10 +29,11 @@ function SearchBar() {
           />
         </svg>
       </button>
+      
 
       {/* Input de recherche (apparaît au clic) */}
       {isOpen && (
-        <div className="absolute left-8">
+        <div className="absolute left-8 flex items-center gap-4 whitespace-nowrap">
           <input
             type="text"
             value={searchTerm}
@@ -38,6 +42,12 @@ function SearchBar() {
             className="w-64 px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-primary text-white"
             autoFocus
           />
+
+          {searchTerm && (
+            <form onSubmit={handleSubmit}>
+              <p>Vous cherchez: {searchTerm}</p>
+            </form>
+          )}
         </div>
       )}
     </div>
