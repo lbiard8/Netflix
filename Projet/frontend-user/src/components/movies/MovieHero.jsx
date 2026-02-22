@@ -1,6 +1,6 @@
 import Button from '../common/Button';
 
-function MovieHero({ movie }) {
+function MovieHero({ movie, onLouer }) {
   return (
     <div className="relative h-[70vh] w-full overflow-hidden bg-black">
       {/* Background Image */}
@@ -39,9 +39,14 @@ function MovieHero({ movie }) {
 
         {/* Actions */}
         <div className="mt-8 flex flex-wrap gap-4">
-          <Button variant="primary" size="lg" className="gap-2">
-            <span>▶</span> Louer pour {movie.price}€
-          </Button>
+          <Button 
+          variant="primary" 
+          size="lg" // Tu peux mettre "lg" pour le Hero
+          onClick={() => onLouer(movie)}
+          className="px-8 py-3 font-bold"
+        >
+          ▶ Louer pour {movie.price}€
+        </Button>
           
           <Button variant="secondary" size="lg" className="gap-2">
             <span className="text-xl">ⓘ</span> Plus d'infos

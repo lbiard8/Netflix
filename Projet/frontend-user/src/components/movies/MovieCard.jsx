@@ -11,7 +11,7 @@ const genreColors = {
   'Thriller': 'bg-gray-500'
  };
 
-function MovieCard({ movie }) {
+function MovieCard({ movie, onLouer }) {
   const [isLiked, setIsLiked] = useState(false);
   return (
     <div className="group relative h-100 w-full overflow-hidden rounded-md bg-zinc-900 transition-all duration-300 hover:scale-105 hover:z-10 text-center">
@@ -25,7 +25,7 @@ function MovieCard({ movie }) {
       <div className="absolute top-2 left-2 z-10 rounded bg-black/60 px-2 py-1 text-xs text-yellow-500 backdrop-blur-md">
         <button 
           onClick={(e) => {
-            e.stopPropagation(); // Empêche le clic de se propager au parent (la carte du film)
+            e.stopPropagation(); 
             setIsLiked(!isLiked);
           }} 
           className="like-button"
@@ -61,7 +61,12 @@ function MovieCard({ movie }) {
 
         {/* Actions */}
         <div className="mt-3 flex gap-2">
-          <Button variant="primary" size="sm" className="w-full text-[10px]">
+          <Button 
+            variant="primary" 
+            size="sm" 
+            onClick={() => onLouer(movie)}
+            className="w-full text-[10px] bg-primary px-4 py-2 rounded text-white"
+          >
             ▶ Louer {movie.price}€
           </Button>
           <Button variant="secondary" size="sm" className="px-2">
