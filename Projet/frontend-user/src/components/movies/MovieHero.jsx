@@ -1,12 +1,21 @@
 import Button from '../common/Button';
+import { useNavigate } from 'react-router-dom';
+
+
 
 function MovieHero({ movie, onLouer }) {
+  const navigate = useNavigate(); //
+
+  const handleMoreInfo = () => {
+    navigate(`/movie/${movie.id}`); //
+  };
+
   return (
     <div className="relative h-[70vh] w-full overflow-hidden bg-black">
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src={movie.image}
+          src={movie.poster|| movie.image} 
           alt={movie.title}
           className="h-full w-full object-cover opacity-60"
         />
@@ -48,7 +57,8 @@ function MovieHero({ movie, onLouer }) {
           ▶ Louer pour {movie.price}€
         </Button>
           
-          <Button variant="secondary" size="lg" className="gap-2">
+          <Button variant="secondary" size="lg" className="gap-2"
+          onClick={handleMoreInfo}>
             <span className="text-xl">ⓘ</span> Plus d'infos
           </Button>
         </div>

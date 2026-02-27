@@ -1,6 +1,7 @@
 import Button from '../common/Button';
 import MovieDescription from './MovieDescription';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const genreColors = {
   'Action': 'bg-red-500',
@@ -9,13 +10,20 @@ const genreColors = {
   'Science-Fiction': 'bg-purple-500',
   'Horreur': 'bg-orange-500',
   'Thriller': 'bg-gray-500'
- };
+};
 
 function MovieCard({ movie, onLouer }) {
+  const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
+  const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
+  const isAlreadyRented = rentals.some(m => m.id === movie.id);
+
+  const handleCardClick = () => {
+    navigate(`/movie/${movie.id}`); 
+  };
+
   return (
     <div className="group relative h-100 w-full overflow-hidden rounded-md bg-zinc-900 transition-all duration-300 hover:scale-105 hover:z-10 text-center">
-      {/* Image principale */}
       <img
         src={movie.poster}
         alt={movie.title}
@@ -29,28 +37,18 @@ function MovieCard({ movie, onLouer }) {
             setIsLiked(!isLiked);
           }} 
           className="like-button"
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: '1.2rem',
-            position: 'relative', 
-            zIndex: 20            
-          }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', position: 'relative', zIndex: 20 }}
         >
           {isLiked ? '❤' : '🤍'}
         </button>
       </div>
 
-      {/* Badge de note (visible par défaut) */}
       <div className="absolute top-2 right-2 rounded bg-black/60 px-2 py-1 text-xs text-yellow-500 backdrop-blur-md">
         ⭐ {movie.rating}
       </div>
 
-      {/* Overlay au hover */}
       <div className="absolute inset-0 flex flex-col justify-end p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         <h3 className="text-sm font-bold text-white">{movie.title}</h3>
-
         <div className="mt-2 flex items-center gap-2 text-[10px] text-gray-300">
           <span className="text-green-400">{movie.rating}/10</span>
           <span>{movie.year}</span>
@@ -59,18 +57,28 @@ function MovieCard({ movie, onLouer }) {
 
         <MovieDescription description={movie.description} />
 
-        {/* Actions */}
         <div className="mt-3 flex gap-2">
-          <Button 
+          <Button
             variant="primary" 
             size="sm" 
-            onClick={() => onLouer(movie)}
-            className="w-full text-[10px] bg-primary px-4 py-2 rounded text-white"
+            disabled={isAlreadyRented}
+            onClick={(e) => {
+              e.stopPropagation(); 
+              if (!isAlreadyRented) onLouer(movie);
+            }}
+            className={`w-full text-[10px] px-4 py-2 rounded text-white transition-colors ${
+              isAlreadyRented ? 'bg-zinc-700 border-zinc-700 opacity-80' : 'bg-primary'
+            }`}
           >
-            ▶ Louer {movie.price}€
+            {isAlreadyRented ? "✔ Loué" : `▶ Louer ${movie.price}€`}
           </Button>
-          <Button variant="secondary" size="sm" className="px-2">
-            + Info Movie
+          
+          <Button variant="secondary" size="sm" className="px-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCardClick();
+            }}>
+            + Info Film
           </Button>
         </div>
       </div>
