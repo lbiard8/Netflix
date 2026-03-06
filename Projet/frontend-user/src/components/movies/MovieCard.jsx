@@ -15,6 +15,7 @@ const genreColors = {
 function MovieCard({ movie, onLouer }) {
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
+  
   const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
   const isAlreadyRented = rentals.some(m => m.id === movie.id);
 
@@ -23,66 +24,73 @@ function MovieCard({ movie, onLouer }) {
   };
 
   return (
-    <div className="group relative h-100 w-full overflow-hidden rounded-md bg-zinc-900 transition-all duration-300 hover:scale-105 hover:z-10 text-center">
+    <div className="group relative h-[400px] w-full overflow-hidden rounded-md bg-zinc-900 transition-all duration-300 hover:scale-110 hover:z-50 text-center shadow-2xl border border-zinc-800">
+      
+      {/* Image de fond */}
       <img
         src={movie.poster}
         alt={movie.title}
-        className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-30"
+        className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-20" 
       />
 
-      <div className="absolute top-2 left-2 z-10 rounded bg-black/60 px-2 py-1 text-xs text-yellow-500 backdrop-blur-md">
-        <button 
-          onClick={(e) => {
-            e.stopPropagation(); 
-            setIsLiked(!isLiked);
-          }} 
-          className="like-button"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', position: 'relative', zIndex: 20 }}
-        >
+      {/* Badges du haut */}
+      <div className="absolute top-2 left-2 z-20 rounded bg-black/60 px-2 py-1 text-xs text-yellow-500 backdrop-blur-md">
+        <button onClick={(e) => { e.stopPropagation(); setIsLiked(!isLiked); }} className="cursor-pointer">
           {isLiked ? '❤' : '🤍'}
         </button>
       </div>
 
-      <div className="absolute top-2 right-2 rounded bg-black/60 px-2 py-1 text-xs text-yellow-500 backdrop-blur-md">
+      <div className="absolute top-2 right-2 z-20 rounded bg-black/60 px-2 py-1 text-xs text-yellow-500 backdrop-blur-md font-bold">
         ⭐ {movie.rating}
       </div>
 
-      <div className="absolute inset-0 flex flex-col justify-end p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <h3 className="text-sm font-bold text-white">{movie.title}</h3>
-        <div className="mt-2 flex items-center gap-2 text-[10px] text-gray-300">
+      {/* Overlay Détails */}
+      <div className="absolute inset-0 flex flex-col justify-end p-4 
+                      opacity-0 group-hover:opacity-100 
+                      pointer-events-none group-hover:pointer-events-auto
+                      transition-all duration-300 
+                      bg-gradient-to-t from-black via-black/90 to-transparent"> 
+        
+        <h3 className="text-sm font-bold text-white mb-1 truncate">{movie.title}</h3>
+
+        <div className="mb-2 flex items-center justify-center gap-2 text-[10px] text-gray-400 font-medium">
           <span className="text-green-400">{movie.rating}/10</span>
           <span>{movie.year}</span>
           <span>{movie.duration}min</span>
         </div>
 
-        <MovieDescription description={movie.description} />
+        <div className="text-[10px] text-gray-300 mb-4 overflow-hidden leading-relaxed italic"
+             style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
+          <MovieDescription description={movie.description} />
+        </div>
 
-        <div className="mt-3 flex gap-2">
+        {/* Boutons en bas */}
+        <div className="mt-2 flex gap-2">
           <Button
             variant="primary" 
             size="sm" 
             disabled={isAlreadyRented}
-            onClick={(e) => {
-              e.stopPropagation(); 
-              if (!isAlreadyRented) onLouer(movie);
-            }}
-            className={`w-full text-[10px] px-4 py-2 rounded text-white transition-colors ${
-              isAlreadyRented ? 'bg-zinc-700 border-zinc-700 opacity-80' : 'bg-primary'
+            onClick={(e) => { e.stopPropagation(); if (!isAlreadyRented) onLouer(movie); }}
+            className={`flex-1 text-[9px] py-2 rounded font-bold uppercase transition-colors ${
+              isAlreadyRented ? 'bg-zinc-700 border-zinc-700' : 'bg-red-600 hover:bg-red-700'
             }`}
           >
-            {isAlreadyRented ? "✔ Loué" : `▶ Louer ${movie.price}€`}
+            {isAlreadyRented ? "✔ Loué" : `Louer ${movie.price}€`}
           </Button>
           
-          <Button variant="secondary" size="sm" className="px-2"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCardClick();
-            }}>
-            + Info Film
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            className="px-2 text-[9px] bg-zinc-800 hover:bg-zinc-700 border-none"
+            onClick={(e) => { e.stopPropagation(); handleCardClick(); }}
+          >
+            + Infos
           </Button>
         </div>
       </div>
-      <div className={`absolute bottom-2 left-2 w-4 h-4 rounded-full ${genreColors[movie.genre] || 'bg-gray-400'}`} />
+
+      {/* Pastille de genre */}
+      <div className={`absolute bottom-2 left-2 w-3 h-3 rounded-full z-10 ${genreColors[movie.genre] || 'bg-gray-400'}`} />
     </div>
   );
 }

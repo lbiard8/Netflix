@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import MovieHero from "../components/movies/MovieHero";
 import MovieList from "../components/movies/MovieList";
+import MovieCarousel from "../components/movies/MovieCarousel";
 import MovieFilter from "../components/movies/MovieFilter";
 import Navbar from "../components/common/Navbar";
 import movies from "../../../data/movies.json";
@@ -98,7 +99,8 @@ function Home() {
                     </>
                 )}
                 
-                <MovieList title={`Résultats (${filteredMovies.length})`} movies={filteredMovies} onLouer={handleLouer} checkRented={checkIsRented} />
+                <MovieCarousel title="Tous les films" movies={allMovies} onLouer={handleLouer} checkRented={checkIsRented} />
+                <MovieList title={`Filtrage par genre (${filteredMovies.length})`} movies={filteredMovies} onLouer={handleLouer} checkRented={checkIsRented} />
                 <MovieList title="Populaires" movies={popularMovies} onLouer={handleLouer} checkRented={checkIsRented} />
                 <MovieList title="Action" movies={actionMovies} onLouer={handleLouer} checkRented={checkIsRented} />
                 <MovieList title="Récents" movies={recentMovies} onLouer={handleLouer} checkRented={checkIsRented} /> 

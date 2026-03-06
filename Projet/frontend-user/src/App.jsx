@@ -5,6 +5,7 @@ import MyRentals from './pages/MyRentals';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import NotFound from './pages/NotFound';
+import Search from './pages/Search';
 import Navbar from './components/common/Navbar';
 import Footer from './components/layout/Footer'; 
 import ProtectedRoute from './utils/ProtectedRoute';
@@ -16,6 +17,7 @@ function App() {
         <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/search" element={<Search />} />
         <Route path="/movie/:id" element={<MovieDetail />} />
         <Route path="/my-rentals" element={<ProtectedRoute><MyRentals /></ProtectedRoute>} />
         <Route path="/login" element={<Login />} />
