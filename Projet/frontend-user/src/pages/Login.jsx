@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '../components/common/Button'; 
+import { useAuth } from '../context/AuthProvider';
 
 function Login() {
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -15,23 +16,23 @@ function Login() {
     return newErrors;
   };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const newErrors = validateForm();
-        if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
-        return;
-        }
-        setLoading(true);
-        setTimeout(() => {
-        const userData = {
-            email: formData.email,
-            name: formData.email.split('@')[0]
-        };
-        localStorage.setItem('user', JSON.stringify(userData));
-        setLoading(false);
-            navigate('/'); 
-    }, 1000);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newErrors = validateForm();
+    if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+    }
+    setLoading(true);
+    setTimeout(async () => {
+    // Simulation de connexion
+    const result = await login(formData.email, formData.password);
+    if (result.success) {
+    navigate("/");
+    } else {
+    setErrors(result.error || "Erreur de connexion");
+    setLoading(false);
+    }}, 1000);
   };
 
 return (

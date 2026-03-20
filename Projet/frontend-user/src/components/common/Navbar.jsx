@@ -3,11 +3,15 @@ import { useState, useEffect } from 'react';
 import SearchBar from './SearchBar';
 import movies from '../../../../data/movies.json';
 import CartButton from './CartButton';
+import { useAuth } from '../../context/AuthProvider';
+import { useCart } from '../../context/CartContext';
 
 function Navbar({itemsInCart = [], onRemove, onCheckout}) {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
-  const user = JSON.parse(localStorage.getItem('user'));
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { user, logout, isAuthenticated } = useAuth();
+  const { cart } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,7 +22,8 @@ function Navbar({itemsInCart = [], onRemove, onCheckout}) {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
+    logout();
+    setShowUserMenu(false);
     navigate('/login');
   };
 
@@ -49,29 +54,48 @@ function Navbar({itemsInCart = [], onRemove, onCheckout}) {
             <SearchBar movies={movies} onSearch={(m) => navigate(`/movie/${m.id}`)} />
           </div>
           <div className="flex items-center space-x-6 text-white">
-            {/* On passe le panier + la suppression + le paiement au CartButton */}
+            {/*  panier +suppression + paiement */}
             <CartButton 
               panier={itemsInCart} 
               onRemove={onRemove} 
               onCheckout={onCheckout} 
             />
             
-            {user ? (
-              <div className="flex items-center gap-4">
-                <div 
-                  onClick={handleLogout}
-                  className="w-10 h-10 bg-red-600 rounded flex items-center justify-center cursor-pointer hover:bg-red-700 transition-colors"
-                  title="Se déconnecter"
-                >
-                  <span className="text-sm font-bold uppercase">
-                    {user.name?.charAt(0) || 'U'}
-                  </span>
-                </div>
+            {isAuthenticated() ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center space-x-2"
+                  >
+                  <img
+                    src={user.avatar}
+                    alt={user.name} className="w-8 h-8 rounded cursor-pointer hover:ring-2 hover:ring-primary transition"/>
+                  <span className="hidden md:block text-sm">{user.name}</span>
+                </button>
+
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-black/95 backdrop-blur-lg border border-gray-800 rounded-lg shadow-xl py-2">
+                    <NavLink to="/profile" className="block px-4 py-2 hover:bg-gray-800 transition" onClick={() => setShowUserMenu(false)}>
+                      Mon profil
+                    </NavLink>
+                    <NavLink to="/my-rentals" className="block px-4 py-2 hover:bg-gray-800 transition" onClick={() => setShowUserMenu(false)}>
+                      Mes locations
+                    </NavLink>
+                    <hr className="border-gray-800 my-2" />
+                    <button 
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-800 transition text-red-400">
+                      Déconnexion
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
-              <NavLink to="/login" className="text-sm font-semibold hover:text-red-600 transition-colors">
-                Connexion
-              </NavLink>
+              <Link to="/login" className="text-sm font-semibold hover:text-red-600 transition-colors">
+                <button className="px-4 py-2 bg-primary hover:bg-primary-dark rounded transition">
+                  Connexion
+                </button>
+              </Link>
             )}
           </div>
         </div>

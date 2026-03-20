@@ -59,8 +59,10 @@ app.get('/api/health', (req, res) => {
 // --- ROUTES API ---
 // Importer de la route
 import movieRoutes from './routes/movie.routes.js';
+import rentalRoutes from './routes/rental.routes.js';
 // Utilisation de la Routes API
 app.use('/api/movies', movieRoutes);
+app.use('/api/rentals', rentalRoutes);
 
 // --- GESTION DES ERREURS ---
 
