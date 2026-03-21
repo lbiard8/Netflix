@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-function MovieHero({ movie, onLouer }) {
+function MovieHero({ movie, onLouer, isRented }) {
   const navigate = useNavigate(); //
 
   const handleMoreInfo = () => {
@@ -19,7 +19,6 @@ function MovieHero({ movie, onLouer }) {
           alt={movie.title}
           className="h-full w-full object-cover opacity-60"
         />
-        {/* Gradient overlays : noir en bas et sur la gauche pour le texte */}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-transparent" />
       </div>
@@ -50,12 +49,13 @@ function MovieHero({ movie, onLouer }) {
         <div className="mt-8 flex flex-wrap gap-4">
           <Button 
           variant="primary" 
-          size="lg" // Tu peux mettre "lg" pour le Hero
-          onClick={() => onLouer(movie)}
-          className="px-8 py-3 font-bold"
-        >
-          ▶ Louer pour {movie.price}€
-        </Button>
+          size="lg" 
+            disabled={isRented} // ✅ Désactivé si loué
+            onClick={() => !isRented && onLouer(movie)}
+            className={`px-8 py-3 font-bold ${isRented ? 'bg-zinc-700 border-zinc-700 opacity-80' : ''}`}
+          >
+            {isRented ? "✔ Déjà Loué" : `▶ Louer pour ${movie.price}€`}
+          </Button>
           
           <Button variant="secondary" size="lg" className="gap-2"
           onClick={handleMoreInfo}>

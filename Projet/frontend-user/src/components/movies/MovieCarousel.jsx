@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import MovieCard from "./MovieCard";
 
-function MovieCarousel({ title, movies, onLouer }) {
+function MovieCarousel({ title, movies, onLouer, isRented, isInCart }) {
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -53,7 +53,7 @@ function MovieCarousel({ title, movies, onLouer }) {
           </button>
         )}
 
-        {/* Container scrollable */}
+        {/* Liste scrollable */}
         <div
           ref={scrollContainerRef}
           onScroll={updateScrollButtons}
@@ -69,7 +69,10 @@ function MovieCarousel({ title, movies, onLouer }) {
               key={movie.id} 
               className="w-[200px] md:w-[250px] lg:w-[300px] shrink-0 transition-transform duration-300"
             >
-               <MovieCard movie={movie} onLouer={onLouer} />
+               <MovieCard movie={movie} 
+                          isRented={isRented} 
+                          isInCart={isInCart} 
+                          onLouer={onLouer} />
             </div>
           ))}
         </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const { login } = useAuth();
@@ -25,7 +25,6 @@ function Login() {
     }
     setLoading(true);
     setTimeout(async () => {
-    // Simulation de connexion
     const result = await login(formData.email, formData.password);
     if (result.success) {
     navigate("/");
@@ -37,7 +36,6 @@ function Login() {
 
 return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-black px-4 font-sans">
-      {/* Logo */}
       <h1 className="text-red-600 text-5xl font-bold tracking-tighter mb-8">
         UMAFLIX
       </h1>
@@ -75,7 +73,6 @@ return (
           </button>
         </form>
 
-        {/* Lien d'inscription comme sur ton image */}
         <div className="mt-8 text-center">
           <p className="text-gray-400 text-sm">
             Pas encore de compte ?{' '}

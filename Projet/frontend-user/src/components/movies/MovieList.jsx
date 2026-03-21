@@ -1,6 +1,6 @@
 import MovieCard from './MovieCard';
 
-function MovieList({ title, movies, onLouer }) {
+function MovieList({ title, movies, onLouer, isRented, isInCart }) {
   return (
     <section className="py-8 px-8 md:px-16">
       {/* Titre de la section */}
@@ -12,7 +12,10 @@ function MovieList({ title, movies, onLouer }) {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {movies && movies.length > 0 ? (
           movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} onLouer={onLouer}/>
+            <MovieCard key={movie.id} movie={movie} 
+                       isRented={isRented} 
+                       isInCart={isInCart} 
+                       onLouer={onLouer}/>
           ))
         ) : (
           <p className="text-gray-400">Aucun film disponible pour le moment.</p>

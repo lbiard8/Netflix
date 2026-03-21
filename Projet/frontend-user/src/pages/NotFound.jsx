@@ -1,8 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
+import { useEffect } from 'react';
 
 function NotFound() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="h-screen bg-black text-white flex flex-col items-center justify-center p-4">

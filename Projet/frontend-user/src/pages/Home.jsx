@@ -4,82 +4,49 @@ import MovieList from "../components/movies/MovieList";
 import MovieCarousel from "../components/movies/MovieCarousel";
 import MovieFilter from "../components/movies/MovieFilter";
 import Navbar from "../components/common/Navbar";
+import { useCart } from '../context/CartContext';
 import movies from "../../../data/movies.json";
-import { useNavigate } from 'react-router-dom';
+import { useNotification } from '../context/NotificationContext';
 
 const POPULAR_MOVIES = [...movies].sort(() => 0.5 - Math.random()).slice(0, 5);
 
 function Home() {
-    const navigate = useNavigate();
     const [allMovies] = useState(movies);
-    const [filteredMovies, setFilteredMovies] = useState(movies);
-    const [panier, setPanier] = useState(() => {
-        const saved = localStorage.getItem('cart');
-        return saved ? JSON.parse(saved) : [];
-    });
-
-    const checkIsRented = (movieId) => {
-        const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
-        return rentals.some(m => m.id === movieId);
-    };
-
-    const rentedList = movies.filter(m => checkIsRented(m.id));
+    const [filteredMovies, setFilteredMovies] = useState(movies);    
+    const { addToCart, isRented, isInCart } = useCart();
+    const rentedList = allMovies.filter(m => isRented(m.id || m._id));
     const heroMovie = movies[0];
     const recentMovies = movies.filter(m => m.year > 2010);
     const popularMovies = POPULAR_MOVIES;
     const actionMovies = movies.filter(m => m.genre === 'Action').slice(0, 5);
+    const { success, error } = useNotification();
 
     useEffect(() => {
-        window.scrollTo(0, 0);
+        window.scrollTo(0, 0); 
     }, []);
 
-
     const handleLouer = (movie) => {
-        const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
-        if (rentals.find(m => m.id === movie.id)) {
+        if (isRented(movie.id)) { 
+            error("Vous avez déjà loué ce film !");
             return; 
         }
         
-        if (!panier.find(item => item.id === movie.id)) {
-            const nouveauPanier = [...panier, movie];
-            setPanier(nouveauPanier);
-            localStorage.setItem('cart', JSON.stringify(nouveauPanier));
+        if (!isInCart(movie.id)) { 
+            addToCart(movie); 
+            success("Film ajouté au panier !");
         } else {
-            alert("Ce film est déjà dans votre panier !");
+            error("Ce film est déjà dans votre panier !");
         }
-    };
-
-    const supprimerDuPanier = (id) => {
-        const nouveauPanier = panier.filter(item => item.id !== id);
-        setPanier(nouveauPanier);
-        localStorage.setItem('cart', JSON.stringify(nouveauPanier));
-    };
-
-    const handlePaiement = () => {
-        const dateExp = new Date();
-        dateExp.setMonth(dateExp.getMonth() + 2);
-        const dateString = dateExp.toLocaleDateString('fr-FR');
-       
-        const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
-        const currentRentals = JSON.parse(localStorage.getItem('rentals')) || [];        
-        const nouveauxFilmsLoues = currentCart.map(movie => ({
-            ...movie,
-            dateFin: dateString
-        }));
-        localStorage.setItem('rentals', JSON.stringify([...currentRentals, ...nouveauxFilmsLoues]));
-        localStorage.removeItem('cart');
-        setPanier([]);
-        alert(`Merci ! Vos films sont loués jusqu'au ${dateString}`);
-        navigate('/my-rentals');
     };
     
     return (
         <div className="space-y-12 pb-20 bg-black min-h-screen text-white">
-            <Navbar itemsInCart={panier} onRemove={supprimerDuPanier} onCheckout={handlePaiement}/>             
+            <Navbar />             
             <MovieHero 
                 movie={heroMovie} 
                 onLouer={handleLouer} 
-                isRented={checkIsRented(heroMovie.id)}
+                isRented={isRented(heroMovie.id || heroMovie._id)}
+                isInCart={isInCart(heroMovie.id || heroMovie._id)}
             />             
             <div className="container mx-auto px-4 space-y-12">
                 <section className="py-6">
@@ -93,17 +60,20 @@ function Home() {
                 {rentedList.length > 0 && (
                     <>
                         <MovieList 
-                            title="Vos films loués" movies={rentedList} onLouer={handleLouer} checkRented={checkIsRented} 
+                            title="Vos films loués" 
+                            movies={rentedList} 
+                            onLouer={handleLouer} 
+                            isRented={isRented} 
+                            isInCart={isInCart}
                         />
                         <hr className="border-gray-800" />
                     </>
                 )}
                 
-                <MovieCarousel title="Tous les films" movies={allMovies} onLouer={handleLouer} checkRented={checkIsRented} />
-                <MovieList title={`Filtrage par genre (${filteredMovies.length})`} movies={filteredMovies} onLouer={handleLouer} checkRented={checkIsRented} />
-                <MovieList title="Populaires" movies={popularMovies} onLouer={handleLouer} checkRented={checkIsRented} />
-                <MovieList title="Action" movies={actionMovies} onLouer={handleLouer} checkRented={checkIsRented} />
-                <MovieList title="Récents" movies={recentMovies} onLouer={handleLouer} checkRented={checkIsRented} /> 
+<MovieCarousel title="Tous les films" movies={allMovies} onLouer={handleLouer} isRented={isRented} isInCart={isInCart} />                <MovieList title={`Filtrage par genre (${filteredMovies.length})`} movies={filteredMovies} onLouer={handleLouer} isRented={isRented} isInCart={isInCart} />
+                <MovieList title="Populaires" movies={popularMovies} onLouer={handleLouer} isRented={isRented} isInCart={isInCart} />
+                <MovieList title="Action" movies={actionMovies} onLouer={handleLouer} isRented={isRented} isInCart={isInCart} />
+                <MovieList title="Récents" movies={recentMovies} onLouer={handleLouer} isRented={isRented} isInCart={isInCart} />
                 
                 <hr className="border-gray-800" />
             </div>

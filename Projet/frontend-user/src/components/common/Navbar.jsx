@@ -3,15 +3,13 @@ import { useState, useEffect } from 'react';
 import SearchBar from './SearchBar';
 import movies from '../../../../data/movies.json';
 import CartButton from './CartButton';
-import { useAuth } from '../../context/AuthProvider';
-import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 
-function Navbar({itemsInCart = [], onRemove, onCheckout}) {
+function Navbar() {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { user, logout, isAuthenticated } = useAuth();
-  const { cart } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,11 +52,8 @@ function Navbar({itemsInCart = [], onRemove, onCheckout}) {
             <SearchBar movies={movies} onSearch={(m) => navigate(`/movie/${m.id}`)} />
           </div>
           <div className="flex items-center space-x-6 text-white">
-            {/*  panier +suppression + paiement */}
+            {/* panier */}
             <CartButton 
-              panier={itemsInCart} 
-              onRemove={onRemove} 
-              onCheckout={onCheckout} 
             />
             
             {isAuthenticated() ? (

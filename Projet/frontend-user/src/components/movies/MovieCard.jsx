@@ -12,15 +12,12 @@ const genreColors = {
   'Thriller': 'bg-gray-500'
 };
 
-function MovieCard({ movie, onLouer }) {
+function MovieCard({ movie, onLouer, isRented }) {
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
-  
-  const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
-  const isAlreadyRented = rentals.some(m => m.id === movie.id);
-
+  const isAlreadyRented = isRented ? isRented(movie.id || movie._id) : false;
   const handleCardClick = () => {
-    navigate(`/movie/${movie.id}`); 
+    navigate(`/movie/${movie.id || movie._id}`); 
   };
 
   return (

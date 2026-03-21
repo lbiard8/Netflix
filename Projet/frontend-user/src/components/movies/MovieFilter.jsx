@@ -2,8 +2,7 @@ import { useState } from 'react';
 
 function MovieFilter({ movies, onFilter }) {
   const [selectedGenre, setSelectedGenre] = useState('all');
-  const genres = ['all', ...new Set(movies.map(movie => movie.genre))];
-
+  const genres = ['all', ...new Set(movies.filter(m => m.genre).map(movie => movie.genre))];
   const genreColors = {
     'Action': 'bg-red-500',
     'Comédie': 'bg-yellow-500',

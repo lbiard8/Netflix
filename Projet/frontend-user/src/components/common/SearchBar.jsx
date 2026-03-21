@@ -49,7 +49,7 @@ function SearchBar({ movies, onSearch }) {
                         autoFocus
                     />
 
-                    {/* Dropdown des suggestions rapides */}
+                    {/* Suggestions rapides */}
                     {showDropdown && suggestions.length > 0 && (
                         <ul className="absolute mt-2 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
                             {suggestions.map((movie) => (

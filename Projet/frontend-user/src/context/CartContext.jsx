@@ -4,25 +4,28 @@ const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem('umaflix_cart');
+    const savedCart = localStorage.getItem('cart');
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
   const [rentals, setRentals] = useState(() => {
-    const savedRentals = localStorage.getItem('umaflix_rentals');
+    const savedRentals = localStorage.getItem('rentals');
     return savedRentals ? JSON.parse(savedRentals) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem('umaflix_cart', JSON.stringify(cart));
-    localStorage.setItem('umaflix_rentals', JSON.stringify(rentals));
+    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('rentals', JSON.stringify(rentals));
   }, [cart, rentals]);
 
   // Ajouter au panier
   const addToCart = (movie) => {
-    if (!isInCart(movie.id) && !isRented(movie.id)) {
-      setCart((prev) => [...prev, movie]);
-    }
+    setCart((prevCart) => {
+      if (prevCart.find((item) => item.id == movie.id)) {
+        return prevCart;
+      }
+      return [...prevCart, movie]; 
+    });
   };
 
   // Retirer du panier
@@ -93,8 +96,11 @@ export function CartProvider({ children }) {
 
   // Vérifier si un film est loué
   const isRented = (movieId) => {
-    return rentals.some((r) => r.movieId === movieId);
-  };
+  return rentals.some(r => {
+    const rentalMovieId = String(r.movie?._id || r.movie || r.movieId || r.id);
+    return rentalMovieId === String(movieId);
+  });
+};
 
   // Obtenir la location d'un film
   const getRentalByMovieId = (movieId) => {

@@ -4,70 +4,42 @@ import movies from '../../../data/movies.json';
 import Button from '../components/common/Button';
 import Navbar from '../components/common/Navbar';
 import Breadcrumb from '../components/common/Breadcrumb';
+import { useCart } from '../context/CartContext';
+import { useNotification } from '../context/NotificationContext';
 
 function MovieDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const [panier, setPanier] = useState(() => {
-    const saved = localStorage.getItem('cart');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const checkRented = () => {
-    if (!movie) return false;
-    const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
-    return rentals.some(m => m.id === movie.id);
-  };
+  const { success, error } = useNotification();
+  
+  const { addToCart, isInCart, isRented } = useCart();
 
   useEffect(() => {
     const foundMovie = movies.find((m) => m.id.toString() === id);
     window.scrollTo(0, 0);
 
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setMovie(foundMovie);
       setLoading(false);
     }, 500);
+    
+    return () => clearTimeout(timer);
   }, [id]);
 
-  const handleRent = () => {
-    const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
-    if (rentals.find(m => m.id === movie.id)) {
-        return;
+  const handleRentAction = () => {
+    if (isRented(movie.id)) {
+      error("Vous possédez déjà ce film !");
+      return;
     }
 
-    const isInCart = panier.find(m => m.id === movie.id);
-    if (!isInCart) {
-        const nouveauPanier = [...panier, movie];
-        setPanier(nouveauPanier);
-        localStorage.setItem('cart', JSON.stringify(nouveauPanier));
-        alert("Film ajouté au panier !");
+    if (!isInCart(movie.id)) {
+      addToCart(movie);
+      success("Film ajouté au panier !");
     } else {
-        alert("Ce film est déjà dans votre panier !");
+      error("Ce film est déjà dans votre panier !");
     }
-  };
-
-  const handleRemove = (movieId) => {
-    const nouveauPanier = panier.filter(item => item.id !== movieId);
-    setPanier(nouveauPanier);
-    localStorage.setItem('cart', JSON.stringify(nouveauPanier));
-  };
-
-  const handlePaiement = () => {
-    const dateExp = new Date();
-    dateExp.setMonth(dateExp.getMonth() + 2);
-    const dateString = dateExp.toLocaleDateString('fr-FR');
-    const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
-    const currentRentals = JSON.parse(localStorage.getItem('rentals')) || [];
-    const nouveauxFilmsLoues = currentCart.map(m => ({...m, dateFin: dateString}));
-    
-    localStorage.setItem('rentals', JSON.stringify([...currentRentals, ...nouveauxFilmsLoues]));
-    localStorage.removeItem('cart');
-    setPanier([]);
-    alert(`Merci ! Vos films sont loués jusqu'au ${dateString}`);
-    navigate('/my-rentals');
   };
 
   if (loading) {
@@ -88,11 +60,9 @@ function MovieDetail() {
     );
   }
 
-  const isRented = checkRented();
-
   return (
     <div className="min-h-screen bg-black text-white">
-      <Navbar itemsInCart={panier} onRemove={handleRemove} onCheckout={handlePaiement} />
+      <Navbar />
       <div className="pt-28 px-8 md:px-16"> 
         <Breadcrumb items={[ 
           { label: 'Films', path: '/' }, 
@@ -131,11 +101,15 @@ function MovieDetail() {
             </p>
             
             <Button 
-              variant={isRented ? "secondary" : "primary"} 
+              variant={isRented(movie.id) || isInCart(movie.id) ? "secondary" : "primary"} 
               size="lg" 
-              onClick={handleRent}
+              onClick={handleRentAction}
+              disabled={isRented(movie.id) || isInCart(movie.id)}
             >
-                {isRented ? "✔ Loué" : `▶ Ajouter au panier (${movie.price}€)`}
+              {isRented(movie.id)
+                ? "✔ Loué"
+                : isInCart(movie.id) ? "Dans le panier" : `▶ Ajouter au panier (${movie.price}€)`
+              }
             </Button>
           </div>
         </div>

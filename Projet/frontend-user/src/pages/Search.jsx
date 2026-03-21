@@ -1,17 +1,16 @@
 import { useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
 import movies from '../../../data/movies.json';
+import { useCart } from '../context/CartContext'; 
 import MovieCard from '../components/movies/MovieCard';
+import { useNotification } from '../context/NotificationContext';
 
 function Search() {
     const [searchParams] = useSearchParams();
-  const query = searchParams.get('q') || '';
-  const [sortBy, setSortBy] = useState('rating');
-  
-  const [panier, setPanier] = useState(() => {
-    const saved = localStorage.getItem('cart');
-    return saved ? JSON.parse(saved) : [];
-  });
+    const query = searchParams.get('q') || '';
+    const [sortBy, setSortBy] = useState('rating');
+    const { addToCart, isInCart, isRented } = useCart(); 
+    const { success, error } = useNotification();
 
   const results = movies.filter(movie => 
     movie.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -26,10 +25,11 @@ function Search() {
   });
 
   const handleLouer = (movie) => {
-    if (!panier.find(item => item.id === movie.id)) {
-      const nP = [...panier, movie];
-      setPanier(nP);
-      localStorage.setItem('cart', JSON.stringify(nP));
+    if (!isInCart(movie.id)) { 
+      addToCart(movie); 
+      success("Film ajouté au panier !");
+    } else {
+      error("Ce film est déjà dans votre panier !");
     }
   };
 
@@ -59,7 +59,7 @@ function Search() {
       {results.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {sortedResults.map(movie => (
-            <MovieCard key={movie.id} movie={movie} onLouer={handleLouer} />
+            <MovieCard key={movie.id} movie={movie} onLouer={handleLouer} isRented={isRented} isInCart={isInCart} />
           ))}
         </div>
       ) : (

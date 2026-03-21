@@ -26,7 +26,6 @@ const testModels = async () => {
 
     // Test 2: Tester la méthode comparePassword (Méthode d'instance)
     console.log('\nTest 2: Comparaison de mot de passe');
-    // On doit forcer la sélection du password car il est select: false par défaut
     const userWithPassword = await User.findById(testUser._id).select('+password');
     const isMatch = await userWithPassword.comparePassword('test123');
     console.log('✅ Password match:', isMatch);
