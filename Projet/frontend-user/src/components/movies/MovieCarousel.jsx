@@ -66,7 +66,7 @@ function MovieCarousel({ title, movies, onLouer, isRented, isInCart }) {
         >
           {movies.map((movie) => (
             <div 
-              key={movie.id} 
+              key={movie._id} 
               className="w-[200px] md:w-[250px] lg:w-[300px] shrink-0 transition-transform duration-300"
             >
                <MovieCard movie={movie} 

@@ -1,16 +1,22 @@
 import express from 'express';
-import { createRental, 
-         cancelRental, 
-         getRentalStats, 
-         getRecommendations, 
-         getAllRentals, 
-         getMyRentals } from '../controllers/rental.controller.js';
-const router = express.Router();
-router.post('/', createRental);
-router.get('/my-rentals', getMyRentals);
-router.get('/recommendations', getRecommendations);
-router.delete('/:id', cancelRental);
-router.get('/stats', getRentalStats);
-router.get('/', getAllRentals);
+import { 
+  createRental, 
+  cancelRental, 
+  getRentalStats, 
+  getRecommendations, 
+  getAllRentals, 
+  getMyRentals 
+} from '../controllers/rental.controller.js';
+import { protect, admin } from '../middleware/auth.middleware.js';
 
-export default router; 
+const router = express.Router();
+
+router.post('/', protect, createRental);
+router.get('/my-rentals', protect, getMyRentals);
+router.get('/recommendations', protect, getRecommendations);
+router.delete('/:id', protect, cancelRental);
+
+router.get('/stats', protect, admin, getRentalStats);
+router.get('/', protect, admin, getAllRentals);
+
+export default router;

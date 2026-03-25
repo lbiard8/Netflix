@@ -63,7 +63,7 @@ function Cart() {
           {/* Liste des films */}
           <div className="lg:col-span-2 space-y-4">
             {cart.map((movie) => (
-              <div key={movie.id} className="flex items-center bg-gray-900 rounded-lg p-4 border border-gray-800">
+              <div key={movie._id} className="flex items-center bg-gray-900 rounded-lg p-4 border border-gray-800">
                 <img 
                   src={movie.poster} 
                   alt={movie.title} 
@@ -80,7 +80,7 @@ function Cart() {
                 </div>
                 {/* Bouton pour supprimer un film spécifique */}
                 <button 
-                  onClick={() => removeFromCart(movie.id)}
+                  onClick={() => removeFromCart(movie._id)}
                   className="text-red-400 hover:text-red-300 transition ml-4"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

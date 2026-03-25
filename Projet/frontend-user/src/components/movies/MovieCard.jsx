@@ -15,9 +15,9 @@ const genreColors = {
 function MovieCard({ movie, onLouer, isRented }) {
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
-  const isAlreadyRented = isRented ? isRented(movie.id || movie._id) : false;
+  const isAlreadyRented = isRented;
   const handleCardClick = () => {
-    navigate(`/movie/${movie.id || movie._id}`); 
+    navigate(`/movie/${movie._id || movie._id}`); 
   };
 
   return (

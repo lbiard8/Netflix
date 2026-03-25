@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 
 function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const { error: notifyError } = useNotification();
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {
@@ -18,20 +20,27 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors);
-    return;
+    setErrors({});
+
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
     }
+
     setLoading(true);
-    setTimeout(async () => {
-    const result = await login(formData.email, formData.password);
-    if (result.success) {
-    navigate("/");
-    } else {
-    setErrors(result.error || "Erreur de connexion");
-    setLoading(false);
-    }}, 1000);
+    try {
+      const result = await login(formData);
+      if (result.success) {
+        navigate("/");
+      } else {
+        notifyError(result.error || "Email ou mot de passe incorrect");
+      }
+    } catch (_) {
+      notifyError("Impossible de contacter le serveur");
+    } finally {
+      setLoading(false);
+    }
   };
 
 return (
@@ -42,12 +51,11 @@ return (
 
       <div className="w-full max-w-md p-10 bg-black rounded-lg border border-zinc-800 shadow-2xl">
         <h2 className="text-2xl font-bold text-white mb-8">Se connecter</h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="relative">
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">          <div className="relative">
             <input 
               type="email"
               placeholder="Email"
+              value={formData.email}
               className="w-full p-4 bg-zinc-800/50 rounded text-white border border-zinc-700 focus:border-red-600 outline-none transition-all placeholder:text-gray-500"
               onChange={(e) => setFormData({...formData, email: e.target.value})}
             />
@@ -58,6 +66,7 @@ return (
             <input 
               type="password"
               placeholder="Mot de passe"
+              value={formData.password}
               className="w-full p-4 bg-zinc-800/50 rounded text-white border border-zinc-700 focus:border-red-600 outline-none transition-all placeholder:text-gray-500"
               onChange={(e) => setFormData({...formData, password: e.target.value})}
             />
@@ -67,13 +76,13 @@ return (
           <button 
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded transition-colors disabled:opacity-50"
+            className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Connexion...' : 'Se connecter'}
+            {loading ? 'Connexion en cours...' : 'Se connecter'}
           </button>
         </form>
 
-        <div className="mt-8 text-center">
+        <div className="mt-8 text-center border-t border-zinc-800 pt-6">
           <p className="text-gray-400 text-sm">
             Pas encore de compte ?{' '}
             <span 

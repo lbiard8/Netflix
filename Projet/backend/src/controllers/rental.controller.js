@@ -107,30 +107,49 @@ export const getRentalStats = async (req, res, next) => {
 // @route     GET /api/rentals/recommendations
 // @access    Private
 export const getRecommendations = async (req, res, next) => {
-    try{
-        const query = req.query;
-        const userId = query.userId;
+    try {
+        const userId = req.user.id;
         const userRentals = await Rental.find({ user: userId }).populate('movie');
-        const noHistory = userRentals.length === 0;
-        const popularMovies = await Movie.find({ isAvailable: true })
-            .sort({ rentalCount: -1 })
-            .limit(10);
-        const genres = userRentals.map(r => r.movie.genre).flat();
+        if (userRentals.length === 0) {
+            const popularMovies = await Movie.find({ isAvailable: true })
+                .sort({ rentalCount: -1 })
+                .limit(10);
+            return res.status(200).json({
+                success: true,
+                message: "Pour vous",
+                data: popularMovies
+            });
+        }
+        const genreCounts = {};
+        userRentals.forEach(r => {
+            const genres = Array.isArray(r.movie.genre) ? r.movie.genre : [r.movie.genre];
+            genres.forEach(g => {
+                genreCounts[g] = (genreCounts[g] || 0) + 1;
+            });
+        });
+        const sortedGenres = Object.keys(genreCounts).sort((a, b) => genreCounts[b] - genreCounts[a]);
         const rentedMovieIds = userRentals.map(r => r.movie._id);
-        const recommendedMovies = await Movie.find({
-            isAvailable: true,
-            genre: { $in: genres },
-            _id: { $nin: rentedMovieIds } 
-        })
-        .sort({ rating: -1 }) 
-        .limit(10);
+        let allRecommended = [];
+
+        for (const genre of sortedGenres) {
+            const moviesForThisGenre = await Movie.find({
+                isAvailable: true,
+                genre: genre,
+                _id: { $nin: [...rentedMovieIds, ...allRecommended.map(m => m._id)] }
+            })
+            .sort({ rating: -1 })
+            .limit(2);
+
+            allRecommended = [...allRecommended, ...moviesForThisGenre];
+        }
 
         res.status(200).json({
             success: true,
-            message: noHistory ? "Recommandations basées sur la popularité" : "Recommandations basées sur votre historique",
-            data: noHistory ? popularMovies : recommendedMovies
+            message: `Parce que vous aimez ${sortedGenres.slice(0, 2).join(' et ')}`,
+            data: allRecommended
         });
-    }catch(error){
+
+    } catch (error) {
         next(error);
     }
 };

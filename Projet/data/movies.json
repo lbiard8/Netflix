@@ -58,5 +58,65 @@
   "duration": 142,
   "price": 3.99,
   "rating": 8.8
+  },
+  {
+  "id": 6,
+  "title": "La Soupe aux choux",
+  "description": "Deux paysans français découvrent un extraterrestre et décident de l'aider à rentrer chez lui en construisant une soucoupe volante.",
+  "poster": "https://image.tmdb.org/t/p/w500/example.jpg",
+  "backdrop": "https://image.tmdb.org/t/p/original/example.jpg",
+  "genre": "Comédie",
+  "year": 1981,
+  "duration": 98,
+  "price": 2.99,
+  "rating": 6.8
+  },
+  {
+  "id": 7,
+  "title": "Blade Runner 2049",
+  "description": "Un blade runner découvre un secret enfoui depuis longtemps qui pourrait plonger ce qui reste de la société dans le chaos.",
+  "poster": "https://image.tmdb.org/t/p/w500/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg",
+  "backdrop": "https://image.tmdb.org/t/p/original/xJWPZIYOEFIjZpBL7SVBGnzRYXp.jpg",
+  "genre": "Science-Fiction",
+  "year": 2017,
+  "duration": 164,
+  "price": 4.99,
+  "rating": 8.0
+  },
+  {
+  "id": 8,
+  "title": "Dune",
+  "description": "Paul Atreides arrive sur la planète désertique Arrakis, connue pour ses ressources précieuses et ses dangers mortels.",
+  "poster": "https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
+  "backdrop": "https://image.tmdb.org/t/p/original/m6XWQpT0oU2H1tYot8W3J9qgkM.jpg",
+  "genre": "Science-Fiction",
+  "year": 2021,
+  "duration": 155,
+  "price": 5.99,
+  "rating": 8.0
+  },
+  {
+  "id": 9,
+  "title": "The Matrix Resurrections",
+  "description": "Neo découvre que la réalité qu'il pensait connaître n'est qu'une simulation créée par des machines intelligentes.",
+  "poster": "https://image.tmdb.org/t/p/w500/8c4a8kE7PizaGQQnditMmI1xbRp.jpg",
+  "backdrop": "https://image.tmdb.org/t/p/original/eNI7PtK6DEYgZmH79KcM6trTcHQ.jpg",
+  "genre": "Science-Fiction",
+  "year": 2021,
+  "duration": 148,
+  "price": 4.99,
+  "rating": 5.7
+  },
+  {
+  "id": 10,
+  "title": "Mad Max: Fury Road",
+  "description": "Dans un monde post-apocalyptique, Max Rockatansky aide Furiosa à fuir un tyran despotique.",
+  "poster": "https://image.tmdb.org/t/p/w500/8tZYtuWezp8JbcsvHYO0O46tFbo.jpg",
+  "backdrop": "https://image.tmdb.org/t/p/original/tbhdm8UJAb4ViCTsulYFL3lxMCd.jpg",
+  "genre": "Action",
+  "year": 2015,
+  "duration": 120,
+  "price": 4.49,
+  "rating": 8.1
   }
 ]

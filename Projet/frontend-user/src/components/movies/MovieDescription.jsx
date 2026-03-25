@@ -1,4 +1,3 @@
-import Button from '../common/Button';
 import { useState } from 'react';
 
 function MovieDescription({ description }) {

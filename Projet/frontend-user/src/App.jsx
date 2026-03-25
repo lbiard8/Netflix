@@ -8,6 +8,7 @@ import NotFound from './pages/NotFound';
 import Search from './pages/Search';
 import Navbar from './components/common/Navbar';
 import Footer from './components/layout/Footer'; 
+import Profile from './pages/Profile';
 import Cart from './pages/Cart';
 import ProtectedRoute from './utils/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
@@ -31,6 +32,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="*" element={<NotFound />} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               </Routes>
               <Footer />
             </div>

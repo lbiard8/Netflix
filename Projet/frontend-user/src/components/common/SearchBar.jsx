@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function SearchBar({ movies, onSearch }) {
@@ -6,11 +6,17 @@ function SearchBar({ movies, onSearch }) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
+    const searchBarRef = useRef(null);
+    
+    const normalizeText = (text) => 
+        text ? text.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : "";
 
     const suggestions = searchTerm.length >= 2 
-        ? movies.filter(movie => 
-            movie.title.toLowerCase().includes(searchTerm.toLowerCase())
-          ).slice(0, 5)
+        ? movies.filter(movie => {
+            const normalizedTitle = normalizeText(movie.title);
+            const normalizedSearch = normalizeText(searchTerm);
+            return normalizedTitle.includes(normalizedSearch);
+          }).slice(0, 5)
         : [];
 
     const handleGlobalSearch = (e) => {
@@ -21,8 +27,23 @@ function SearchBar({ movies, onSearch }) {
         }
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchBarRef.current && !searchBarRef.current.contains(event.target)) {
+                setSearchTerm('');
+                setShowDropdown(false);
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     return (
-        <div className="relative flex items-center">
+        <div className="relative flex items-center" ref={searchBarRef}>
             {/* Bouton Loupe */}
             <button 
                 onClick={() => setIsOpen(!isOpen)} 
@@ -54,7 +75,7 @@ function SearchBar({ movies, onSearch }) {
                         <ul className="absolute mt-2 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
                             {suggestions.map((movie) => (
                                 <li 
-                                    key={movie.id}
+                                    key={movie._id}
                                     onClick={() => {
                                         setSearchTerm('');
                                         setShowDropdown(false);

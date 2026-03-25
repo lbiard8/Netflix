@@ -1,14 +1,15 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import SearchBar from './SearchBar';
-import movies from '../../../../data/movies.json';
 import CartButton from './CartButton';
 import { useAuth } from '../../context/AuthContext';
+import { moviesAPI } from '../../services/api';
 
 function Navbar() {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [movies, setMovies] = useState([]);
   const { user, logout, isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -17,6 +18,19 @@ function Navbar() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const response = await moviesAPI.getAll();
+        const moviesList = Array.isArray(response) ? response : (response.movies || response.data || []);
+        setMovies(moviesList);
+      } catch (error) {
+        console.error('Erreur lors du chargement des films:', error);
+      }
+    };
+    fetchMovies();
   }, []);
 
   const handleLogout = () => {
@@ -49,7 +63,7 @@ function Navbar() {
                 </NavLink>
               </li>
             </ul>
-            <SearchBar movies={movies} onSearch={(m) => navigate(`/movie/${m.id}`)} />
+            <SearchBar movies={movies} onSearch={(m) => navigate(`/movie/${m._id}`)} />
           </div>
           <div className="flex items-center space-x-6 text-white">
             {/* panier */}
@@ -60,12 +74,13 @@ function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-2"
-                  >
-                  <img
-                    src={user.avatar}
-                    alt={user.name} className="w-8 h-8 rounded cursor-pointer hover:ring-2 hover:ring-primary transition"/>
-                  <span className="hidden md:block text-sm">{user.name}</span>
+                  className="flex items-center space-x-2 focus:outline-none"
+                >
+                  <div className="w-8 h-8 bg-red-600 rounded flex items-center justify-center text-white font-bold uppercase hover:bg-red-700 transition">
+                    {user.name.charAt(0)}
+                  </div>
+                  
+                  <span className="hidden md:block text-sm font-medium">{user.name}</span>
                 </button>
 
                 {showUserMenu && (

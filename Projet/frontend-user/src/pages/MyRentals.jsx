@@ -4,15 +4,16 @@ import Button from '../components/common/Button';
 
 function MyRentals() {
   const navigate = useNavigate();
-  const { rentals } = useCart()
+  const { rentals, cancelRental } = useCart();
+
   const activeRentals = rentals.filter(rental => {
     const expiry = new Date(rental.expiryDate);
-    return expiry > new Date();
+    return rental.status !== 'cancelled' && expiry > new Date();
   });
 
-  const expiredRentals = rentals.filter(rental => {
+  const inactiveRentals = rentals.filter(rental => {
     const expiry = new Date(rental.expiryDate);
-    return expiry <= new Date();
+    return rental.status === 'cancelled' || expiry <= new Date();
   });
 
   return (
@@ -29,6 +30,7 @@ function MyRentals() {
         </div>
       ) : (
         <>
+          {/* SECTION ACTIVES */}
           {activeRentals.length > 0 && (
             <div className="mb-16">
               <h2 className="text-2xl font-bold mb-6 text-green-400 flex items-center gap-2">
@@ -37,7 +39,7 @@ function MyRentals() {
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
                 {activeRentals.map((rental) => (
-                  <div key={rental._id || rental.id} className="group flex flex-col gap-2">
+                  <div key={rental._id || rental.id} className="group flex flex-col gap-2 relative">
                     <div 
                       className="relative aspect-[2/3] overflow-hidden rounded-md cursor-pointer border border-zinc-800"
                       onClick={() => navigate(`/movie/${rental.movie?._id || rental.movieId}`)}
@@ -47,7 +49,21 @@ function MyRentals() {
                         alt={rental.movie?.title || rental.title} 
                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                       />
+                      
+                      {/* BOUTON ANNULER*/}
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if(window.confirm("Annuler cette location ?")) cancelRental(rental._id || rental.id);
+                        }}
+                        className="absolute bottom-2 right-2 bg-red-600 hover:bg-red-700 p-2 rounded-md z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
                     </div>
+
                     <h3 className="font-bold text-lg truncate">
                         {rental.movie?.title || rental.title}
                     </h3>
@@ -60,23 +76,29 @@ function MyRentals() {
             </div>
           )}
 
-          {expiredRentals.length > 0 && (
+          {/* SECTION EXPIRÉES ET ANNULÉES */}
+          {inactiveRentals.length > 0 && (
             <div>
-              <h2 className="text-2xl font-bold mb-6 text-zinc-500">Expirées ({expiredRentals.length})</h2>
+              <h2 className="text-2xl font-bold mb-6 text-zinc-500">Historique / Inactives ({inactiveRentals.length})</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-                {expiredRentals.map((rental) => (
-                  <div key={rental._id || rental.id} className="group flex flex-col gap-2 opacity-50 grayscale hover:grayscale-0 transition-all">
+                {inactiveRentals.map((rental) => (
+                  <div key={rental._id || rental.id} className="group flex flex-col gap-2 opacity-40 grayscale transition-all">
                     <div className="relative aspect-[2/3] overflow-hidden rounded-md border border-zinc-900">
                       <img 
                         src={rental.movie?.poster || rental.poster} 
                         alt={rental.movie?.title || rental.title} 
                         className="h-full w-full object-cover"
                       />
+                      {/* BADGE ANNULÉ / EXPIRÉ */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <span className="text-red-500 font-bold uppercase tracking-widest text-xs border-2 border-red-500 px-2 py-1 rotate-12">
+                          {rental.status === 'cancelled' ? 'Annulé' : 'Expiré'}
+                        </span>
+                      </div>
                     </div>
                     <h3 className="font-bold text-lg truncate text-zinc-400">
                         {rental.movie?.title || rental.title}
                     </h3>
-                    <p className="text-red-500 text-sm italic">Accès expiré</p>
                   </div>
                 ))}
               </div>

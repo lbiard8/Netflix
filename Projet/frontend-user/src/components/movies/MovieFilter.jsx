@@ -2,42 +2,53 @@ import { useState } from 'react';
 
 function MovieFilter({ movies, onFilter }) {
   const [selectedGenre, setSelectedGenre] = useState('all');
-  const genres = ['all', ...new Set(movies.filter(m => m.genre).map(movie => movie.genre))];
-  const genreColors = {
-    'Action': 'bg-red-500',
-    'Comédie': 'bg-yellow-500',
-    'Drame': 'bg-blue-500',
-    'Science-Fiction': 'bg-purple-500',
-    'Horreur': 'bg-orange-500',
-    'Thriller': 'bg-gray-500'
-  };
+  const allGenres = movies.flatMap(m => {
+    if (!m.genre) return [];
+    return Array.isArray(m.genre) 
+      ? m.genre 
+      : m.genre.split(',').map(g => g.trim());
+  });
+  const genres = ['all', ...new Set(allGenres)];
+  const colors = [
+    'bg-red-600', 
+    'bg-blue-600', 
+    'bg-purple-600', 
+    'bg-green-600', 
+    'bg-yellow-600', 
+    'bg-pink-600', 
+    'bg-indigo-600'
+  ];
 
   const handleGenreChange = (genre) => {
     setSelectedGenre(genre);
-
     if (genre === 'all') {
       onFilter(movies);
     } else {
-      const filteredMovies = movies.filter(movie => movie.genre === genre);
+      const filteredMovies = movies.filter(movie => {
+        if (!movie.genre) return false;
+                const movieGenres = Array.isArray(movie.genre) 
+          ? movie.genre 
+          : movie.genre.split(',').map(g => g.trim());
+        return movieGenres.includes(genre);
+      });
       onFilter(filteredMovies);
     }
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {genres.map((genre) => {
+    <div className="flex flex-wrap gap-3">
+      {genres.map((genre, index) => {
         const isActive = selectedGenre === genre;
-        
-        const activeClass = genreColors[genre] || 'bg-primary';
+        const bgColor = genre === 'all' 
+          ? (isActive ? 'bg-red-600' : 'bg-gray-800') 
+          : (isActive ? colors[index % colors.length] : 'bg-gray-800');
 
         return (
           <button
-            key={genre}
+            key={`${genre}-${index}`}
             onClick={() => handleGenreChange(genre)}
-            className={`px-4 py-2 rounded-lg transition font-medium ${
-              isActive
-                ? `${activeClass} text-white shadow-md`
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            className={`px-4 py-2 rounded-md transition-all duration-300 font-medium text-sm ${bgColor} ${
+              isActive ? 'text-white scale-105 shadow-lg' : 'text-gray-400 hover:text-white hover:bg-gray-700'
             }`}
           >
             {genre === 'all' ? 'Tous' : genre}

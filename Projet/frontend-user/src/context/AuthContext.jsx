@@ -1,89 +1,88 @@
 import { createContext, useContext, useState} from 'react';
+import { authAPI, saveAuth, clearAuth, getUser } from '../services/api';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('netflix_user');
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
+  const [user, setUser] = useState(() => getUser());
 
-  const [loading, setLoading] = useState(false);
-
-  const login = async (email, password) => {
+  const login = async (credentials) => {
     try {
-      setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const mockUser = {
-        id: Date.now(),
-        email: email,
-        name: email.split('@')[0],
-        avatar: `https://ui-avatars.com/api/?name=${email}&background=e50914&color=fff`
-      };
-
-      setUser(mockUser);
-      localStorage.setItem('netflix_user', JSON.stringify(mockUser));
-
-      return { success: true };
+      const data = await authAPI.login(credentials);
+      if (data.success) {
+        saveAuth(data.token, data.user);
+        setUser(data.user);
+        return { success: true };
+      }
+      return { success: false, error: data.message || "Identifiants invalides" };
     } catch (error) {
-      return { success: false, error: error.message };
-    } finally {
-      setLoading(false);
+      return { success: false, error: error.message || "Erreur de connexion" };
     }
   };
 
-  const register = async (name, email, password) => {
+  const register = async (userData) => {
     try {
-      setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const mockUser = {
-        id: Date.now(),
-        email: email,
-        name: name,
-        avatar: `https://ui-avatars.com/api/?name=${name}&background=e50914&color=fff`
-      };
-
-      setUser(mockUser);
-      localStorage.setItem('netflix_user', JSON.stringify(mockUser));
-
-      return { success: true };
+      const data = await authAPI.register(userData);
+      if (data.success) {
+        saveAuth(data.token, data.user);
+        setUser(data.user);
+        return { success: true };
+      }
+      return { success: false, error: data.message || "Erreur d'inscription" };
     } catch (error) {
       return { success: false, error: error.message };
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   const logout = () => {
+    clearAuth();
     setUser(null);
-    localStorage.removeItem('netflix_user');
   };
 
-  const isAuthenticated = () => { 
-    return !!user; 
+  const isAuthenticated = () => !!user;
+
+  const updateProfile = async (updates) => {
+    try {
+      const data = await authAPI.updateProfile(updates);
+      if (data.success) {
+        const updatedUser = { ...user, ...data.user };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+        return { success: true };
+      }
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   };
 
-  const updateProfile = (updates) => {
-    const updatedUser = { ...user, ...updates }; 
-    
-    setUser(updatedUser);
-    localStorage.setItem('netflix_user', JSON.stringify(updatedUser));
+  const changePassword = async (passwords) => {
+    try {
+      const data = await authAPI.changePassword(passwords);
+      return { success: true, message: data.message };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   };
 
-  const value = { user, loading, login, register, logout, isAuthenticated, updateProfile };
+  const value = { 
+    user, 
+    login, 
+    register, 
+    logout, 
+    isAuthenticated, 
+    updateProfile,
+    changePassword 
+  };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
-
   if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 }

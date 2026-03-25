@@ -12,7 +12,7 @@ function MovieList({ title, movies, onLouer, isRented, isInCart }) {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {movies && movies.length > 0 ? (
           movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} 
+            <MovieCard key={movie._id} movie={movie} 
                        isRented={isRented} 
                        isInCart={isInCart} 
                        onLouer={onLouer}/>

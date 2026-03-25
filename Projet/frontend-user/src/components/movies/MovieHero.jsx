@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 
 function MovieHero({ movie, onLouer, isRented }) {
-  const navigate = useNavigate(); //
+  const navigate = useNavigate();
 
   const handleMoreInfo = () => {
-    navigate(`/movie/${movie.id}`); //
+    navigate(`/movie/${movie._id}`); 
   };
 
   return (
@@ -50,7 +50,7 @@ function MovieHero({ movie, onLouer, isRented }) {
           <Button 
           variant="primary" 
           size="lg" 
-            disabled={isRented} // ✅ Désactivé si loué
+            disabled={isRented} // Désactivé si loué
             onClick={() => !isRented && onLouer(movie)}
             className={`px-8 py-3 font-bold ${isRented ? 'bg-zinc-700 border-zinc-700 opacity-80' : ''}`}
           >
